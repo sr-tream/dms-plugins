@@ -145,10 +145,10 @@ PluginSettings {
         }
 
         StringSetting {
-            settingKey: "hookPowerHibernate"
-            label: "Hibernate Event Triggered"
-            description: "Hook: onRequestHibernate | Value: empty"
-            placeholder: "/path/to/hibernate-hook.sh"
+            settingKey: "hookResumeFromSleep"
+            label: "Resume From Sleep Event Triggered"
+            description: "Hook: onResumeFromSleep | Value: empty"
+            placeholder: "/path/to/resumeFromSleep-hook.sh"
             defaultValue: ""
         }
 
