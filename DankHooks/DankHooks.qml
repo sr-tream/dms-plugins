@@ -7,6 +7,8 @@ import qs.Modules.Plugins
 
 PluginComponent {
     id: root
+    
+    property bool preparingForSleep: false
 
     property string hookWallpaperPath: pluginData.wallpaperPath || ""
     property string hookLightMode: pluginData.lightMode || ""
@@ -18,6 +20,7 @@ PluginComponent {
     property string hookPowerMonitorOff: pluginData.hookPowerMonitorOff || ""
     property string hookPowerMonitorOn: pluginData.hookPowerMonitorOn || ""
     property string hookPowerSuspend: pluginData.hookPowerSuspend || ""
+    property string hookResumeFromSleep: pluginData.hookResumeFromSleep || ""
     property string hookWifiConnected: pluginData.wifiConnected || ""
     property string hookWifiSSID: pluginData.wifiSSID || ""
     property string hookEthernetConnected: pluginData.ethernetConnected || ""
@@ -96,32 +99,44 @@ PluginComponent {
     }
     
     Connections {
-         target: IdleService
-         
-         function onLockRequested() {
-             if (hookPowerRequestLock) {
-                 executeHook(hookPowerRequestLock, "onLockRequested", "")
-             }
-         }
-         
-         function onRequestMonitorOff() {
-             if (hookPowerMonitorOff) {
-                 executeHook(hookPowerMonitorOff, "onRequestMonitorOff", "")
-             }
-         }
-         
-         function onRequestMonitorOn() {
-             if (hookPowerMonitorOn) {
-                 executeHook(hookPowerMonitorOn, "onRequestMonitorOn", "")
-             }
-         }
-         
-         function onRequestSuspend() {
-             if (hookPowerSuspend) {
-                 executeHook(hookPowerSuspend, "onRequestSuspend", "")
-             }
-         }
-     }
+        target: IdleService
+        
+        function onLockRequested() {
+            if (hookPowerRequestLock) {
+                executeHook(hookPowerRequestLock, "onLockRequested", "")
+            }
+        }
+        
+        function onRequestMonitorOff() {
+            if (hookPowerMonitorOff) {
+                executeHook(hookPowerMonitorOff, "onRequestMonitorOff", "")
+            }
+        }
+        
+        function onRequestMonitorOn() {
+            if (hookPowerMonitorOn) {
+                executeHook(hookPowerMonitorOn, "onRequestMonitorOn", "")
+            }
+        }
+        
+        function onRequestSuspend() {
+            if (hookPowerSuspend) {
+                executeHook(hookPowerSuspend, "onRequestSuspend", "")
+            }
+        }
+    }
+     
+    Connections {
+        target: DMSService
+    
+        function onLoginctlStateUpdate(data) {
+            var lastState = root.preparingForSleep
+            root.preparingForSleep = data.preparingForSleep
+            if (lastState && !root.preparingForSleep) {
+                executeHook(hookResumeFromSleep, "onResumeFromSleep", "")
+            }
+        }
+    }
 
     Connections {
         target: NetworkService
