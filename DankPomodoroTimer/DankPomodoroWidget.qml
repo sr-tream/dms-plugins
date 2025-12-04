@@ -374,24 +374,30 @@ PluginComponent {
                     }
 
                     Row {
+                        id: quickActionsRow
                         width: parent.width
                         spacing: Theme.spacingS
+
+                        property real buttonWidth: (width - spacing * 2) / 3
 
                         DankButton {
                             text: "Work"
                             iconName: "work"
+                            width: quickActionsRow.buttonWidth
                             onClicked: root.startWork(false)
                         }
 
                         DankButton {
                             text: "Short Break"
                             iconName: "coffee"
+                            width: quickActionsRow.buttonWidth
                             onClicked: root.startShortBreak(false)
                         }
 
                         DankButton {
                             text: "Long Break"
                             iconName: "weekend"
+                            width: quickActionsRow.buttonWidth
                             onClicked: root.startLongBreak(false)
                         }
                     }
@@ -438,6 +444,4 @@ PluginComponent {
             }
         }
     }
-
-    popoutWidth: 400
 }
