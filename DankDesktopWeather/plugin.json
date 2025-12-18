@@ -2,7 +2,7 @@
     "id": "dankDesktopWeather",
     "name": "Dank Desktop Weather",
     "description": "Feature-rich weather widget with current conditions, forecasts, and multiple view modes",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "MIT",
     "author": "Avenge Media",
     "icon": "partly_cloudy_day",

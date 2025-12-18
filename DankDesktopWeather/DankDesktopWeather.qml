@@ -74,6 +74,19 @@ DesktopPluginComponent {
     readonly property bool available: WeatherService.weather.available
     readonly property var weather: WeatherService.weather
 
+    readonly property real scaleFactor: Math.min(width, height) / 200
+    readonly property int scaledMargin: {
+        switch (viewMode) {
+        case "compact":
+            return 0;
+        case "standard":
+            return 2;
+        default:
+            return Math.round(Math.max(4, Theme.spacingS * scaleFactor));
+        }
+    }
+    readonly property int scaledSpacing: Math.round(Math.max(1, Theme.spacingXS * scaleFactor))
+
     Ref {
         service: WeatherService
     }
@@ -86,8 +99,8 @@ DesktopPluginComponent {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: Theme.spacingS
-            spacing: Theme.spacingS
+            anchors.margins: root.scaledMargin
+            spacing: root.scaledSpacing
 
             Loader {
                 id: headerLoader
@@ -165,19 +178,19 @@ DesktopPluginComponent {
             id: compactRoot
             visible: root.available
 
-            readonly property real baseSize: Math.min(width, height)
-            readonly property real iconSize: baseSize * 0.5
-            readonly property real tempFontSize: baseSize * 0.18
+            readonly property int baseSize: Math.min(width, height)
+            readonly property int iconSize: Math.round(baseSize * 0.55)
+            readonly property int tempFontSize: Math.round(baseSize * 0.22)
 
-            ColumnLayout {
+            Column {
                 anchors.centerIn: parent
-                spacing: compactRoot.baseSize * 0.04
+                spacing: 0
 
                 DankIcon {
                     name: WeatherService.getWeatherIcon(root.weather.wCode)
                     size: compactRoot.iconSize
                     color: root.accentColor
-                    Layout.alignment: Qt.AlignHCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
 
                     layer.enabled: true
                     layer.effect: MultiEffect {
@@ -195,7 +208,7 @@ DesktopPluginComponent {
                     font.pixelSize: compactRoot.tempFontSize
                     font.weight: Font.Light
                     color: root.textColor
-                    Layout.alignment: Qt.AlignHCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
             }
         }
@@ -208,21 +221,20 @@ DesktopPluginComponent {
             id: standardRoot
             visible: root.available
 
-            readonly property real baseSize: Math.min(width, height)
-            readonly property real iconSize: baseSize * 0.5
-            readonly property real tempFontSize: baseSize * 0.22
-            readonly property real labelFontSize: Math.max(Theme.fontSizeSmall, baseSize * 0.1)
+            readonly property int baseSize: Math.min(width, height)
+            readonly property int iconSize: Math.round(baseSize * 0.55)
+            readonly property int tempFontSize: Math.round(baseSize * 0.28)
+            readonly property int labelFontSize: Math.max(9, Math.round(baseSize * 0.12))
 
             RowLayout {
-                anchors.fill: parent
-                anchors.margins: standardRoot.baseSize * 0.06
-                spacing: standardRoot.baseSize * 0.08
+                anchors.centerIn: parent
+                width: parent.width
+                spacing: Math.round(baseSize * 0.04)
 
                 DankIcon {
                     name: WeatherService.getWeatherIcon(root.weather.wCode)
                     size: standardRoot.iconSize
                     color: root.accentColor
-                    Layout.alignment: Qt.AlignVCenter
 
                     layer.enabled: true
                     layer.effect: MultiEffect {
@@ -235,10 +247,9 @@ DesktopPluginComponent {
                     }
                 }
 
-                ColumnLayout {
+                Column {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    spacing: 1
+                    spacing: 0
 
                     StyledText {
                         text: WeatherService.formatTemp(root.weather.temp, true, false)
@@ -253,7 +264,7 @@ DesktopPluginComponent {
                         font.pixelSize: standardRoot.labelFontSize
                         color: root.dimColor
                         elide: Text.ElideRight
-                        Layout.fillWidth: true
+                        width: parent.width
                     }
 
                     StyledText {
@@ -262,7 +273,7 @@ DesktopPluginComponent {
                         font.pixelSize: standardRoot.labelFontSize
                         color: root.dimColor
                         elide: Text.ElideRight
-                        Layout.fillWidth: true
+                        width: parent.width
                     }
                 }
             }
@@ -276,19 +287,20 @@ DesktopPluginComponent {
             id: detailedRoot
             visible: root.available
 
-            readonly property real baseWidth: width
-            readonly property real iconSize: Math.max(32, Math.min(width * 0.2, 56))
-            readonly property real tempFontSize: Math.max(Theme.fontSizeLarge, width * 0.1)
-            readonly property real labelFontSize: Math.max(Theme.fontSizeSmall, width * 0.05)
-            readonly property real smallIconSize: Math.max(12, width * 0.06)
+            readonly property int baseSize: Math.min(width, height)
+            readonly property int iconSize: Math.round(Math.max(28, Math.min(56, baseSize * 0.28)))
+            readonly property int tempFontSize: Math.round(Math.max(16, Math.min(32, baseSize * 0.16)))
+            readonly property int labelFontSize: Math.round(Math.max(10, Math.min(14, baseSize * 0.07)))
+            readonly property int smallIconSize: Math.round(Math.max(12, Math.min(16, baseSize * 0.07)))
+            readonly property int itemSpacing: Math.round(Math.max(2, Math.min(8, baseSize * 0.04)))
 
             ColumnLayout {
                 anchors.fill: parent
-                spacing: Theme.spacingS
+                spacing: detailedRoot.itemSpacing
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: Theme.spacingM
+                    spacing: detailedRoot.itemSpacing * 2
 
                     DankIcon {
                         name: WeatherService.getWeatherIcon(root.weather.wCode)
@@ -323,6 +335,15 @@ DesktopPluginComponent {
                             font.pixelSize: detailedRoot.labelFontSize
                             color: root.dimColor
                         }
+
+                        StyledText {
+                            visible: root.showLocation && root.weather.city
+                            text: root.weather.city
+                            font.pixelSize: detailedRoot.labelFontSize
+                            color: root.dimColor
+                            elide: Text.ElideRight
+                            Layout.fillWidth: true
+                        }
                     }
 
                     Item {
@@ -335,7 +356,7 @@ DesktopPluginComponent {
                         Layout.alignment: Qt.AlignRight
 
                         RowLayout {
-                            spacing: Theme.spacingXS
+                            spacing: 2
                             DankIcon {
                                 name: "wb_twilight"
                                 size: detailedRoot.smallIconSize
@@ -349,7 +370,7 @@ DesktopPluginComponent {
                         }
 
                         RowLayout {
-                            spacing: Theme.spacingXS
+                            spacing: 2
                             DankIcon {
                                 name: "bedtime"
                                 size: detailedRoot.smallIconSize
@@ -364,15 +385,6 @@ DesktopPluginComponent {
                     }
                 }
 
-                StyledText {
-                    visible: root.showLocation && root.weather.city
-                    text: root.weather.city
-                    font.pixelSize: Theme.fontSizeSmall
-                    color: root.dimColor
-                    Layout.fillWidth: true
-                    elide: Text.ElideRight
-                }
-
                 Rectangle {
                     Layout.fillWidth: true
                     height: 1
@@ -381,7 +393,7 @@ DesktopPluginComponent {
 
                 Flow {
                     Layout.fillWidth: true
-                    spacing: Theme.spacingS
+                    spacing: detailedRoot.itemSpacing
 
                     WeatherMetric {
                         visible: root.showFeelsLike
@@ -391,6 +403,8 @@ DesktopPluginComponent {
                         accentColor: root.accentColor
                         textColor: root.textColor
                         dimColor: root.dimColor
+                        iconSize: detailedRoot.smallIconSize
+                        fontSize: detailedRoot.labelFontSize
                     }
 
                     WeatherMetric {
@@ -401,6 +415,8 @@ DesktopPluginComponent {
                         accentColor: root.accentColor
                         textColor: root.textColor
                         dimColor: root.dimColor
+                        iconSize: detailedRoot.smallIconSize
+                        fontSize: detailedRoot.labelFontSize
                     }
 
                     WeatherMetric {
@@ -411,6 +427,8 @@ DesktopPluginComponent {
                         accentColor: root.accentColor
                         textColor: root.textColor
                         dimColor: root.dimColor
+                        iconSize: detailedRoot.smallIconSize
+                        fontSize: detailedRoot.labelFontSize
                     }
 
                     WeatherMetric {
@@ -421,6 +439,8 @@ DesktopPluginComponent {
                         accentColor: root.accentColor
                         textColor: root.textColor
                         dimColor: root.dimColor
+                        iconSize: detailedRoot.smallIconSize
+                        fontSize: detailedRoot.labelFontSize
                     }
 
                     WeatherMetric {
@@ -431,6 +451,8 @@ DesktopPluginComponent {
                         accentColor: root.accentColor
                         textColor: root.textColor
                         dimColor: root.dimColor
+                        iconSize: detailedRoot.smallIconSize
+                        fontSize: detailedRoot.labelFontSize
                     }
                 }
 
@@ -449,14 +471,14 @@ DesktopPluginComponent {
             id: forecastHeaderRoot
             visible: root.available
 
-            readonly property real baseHeight: height
-            readonly property real iconSize: Math.max(28, baseHeight * 0.7)
-            readonly property real tempFontSize: Math.max(Theme.fontSizeMedium, baseHeight * 0.4)
-            readonly property real labelFontSize: Math.max(Theme.fontSizeSmall, baseHeight * 0.22)
+            readonly property int baseSize: Math.min(width, height)
+            readonly property int iconSize: Math.round(Math.max(20, baseSize * 0.7))
+            readonly property int tempFontSize: Math.round(Math.max(12, baseSize * 0.4))
+            readonly property int labelFontSize: Math.round(Math.max(9, baseSize * 0.22))
 
             RowLayout {
                 anchors.fill: parent
-                spacing: Theme.spacingM
+                spacing: Math.round(baseSize * 0.15)
 
                 DankIcon {
                     name: WeatherService.getWeatherIcon(root.weather.wCode)
@@ -499,7 +521,7 @@ DesktopPluginComponent {
                 GridLayout {
                     columns: 2
                     rowSpacing: 1
-                    columnSpacing: Theme.spacingS
+                    columnSpacing: Math.round(forecastHeaderRoot.baseSize * 0.1)
                     visible: root.width > 300
 
                     WeatherMetric {
@@ -510,6 +532,8 @@ DesktopPluginComponent {
                         textColor: root.textColor
                         dimColor: root.dimColor
                         compact: true
+                        iconSize: forecastHeaderRoot.labelFontSize
+                        fontSize: forecastHeaderRoot.labelFontSize
                     }
 
                     WeatherMetric {
@@ -520,6 +544,8 @@ DesktopPluginComponent {
                         textColor: root.textColor
                         dimColor: root.dimColor
                         compact: true
+                        iconSize: forecastHeaderRoot.labelFontSize
+                        fontSize: forecastHeaderRoot.labelFontSize
                     }
                 }
             }
@@ -530,8 +556,12 @@ DesktopPluginComponent {
         id: forecastSection
 
         ColumnLayout {
-            spacing: Theme.spacingXS
+            id: forecastRoot
+            spacing: root.scaledSpacing
             visible: root.available && root.showForecast
+
+            readonly property int itemFontSize: Math.round(Math.max(10, Math.min(14, root.height * 0.035)))
+            readonly property int itemIconSize: Math.round(Math.max(12, Math.min(18, root.height * 0.04)))
 
             Rectangle {
                 Layout.fillWidth: true
@@ -543,18 +573,18 @@ DesktopPluginComponent {
             DankListView {
                 id: hourlyList
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.showHourlyForecast ? 60 : 0
+                Layout.preferredHeight: root.showHourlyForecast ? Math.round(Math.max(50, Math.min(80, root.height * 0.18))) : 0
                 visible: root.showHourlyForecast && root.weather.hourlyForecast?.length > 0
                 orientation: ListView.Horizontal
                 flickableDirection: Flickable.HorizontalFlick
-                spacing: Theme.spacingXS
+                spacing: root.scaledSpacing
                 clip: true
 
                 model: Math.min(root.hourlyCount, root.weather.hourlyForecast?.length ?? 0)
 
                 delegate: Rectangle {
                     required property int index
-                    width: Theme.iconSizeLarge + Theme.spacingL
+                    width: Math.round(Math.max(36, hourlyList.height * 0.8))
                     height: hourlyList.height
                     radius: Theme.cornerRadius - 2
                     color: root.tileBg
@@ -563,29 +593,37 @@ DesktopPluginComponent {
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: Theme.spacingXS
-                        spacing: 1
+                        anchors.margins: 2
+                        spacing: 0
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
 
                         StyledText {
                             text: forecast.time || "--"
-                            font.pixelSize: Theme.fontSizeSmall - 2
+                            font.pixelSize: forecastRoot.itemFontSize
                             color: root.dimColor
                             Layout.alignment: Qt.AlignHCenter
                         }
 
                         DankIcon {
                             name: WeatherService.getWeatherIcon(forecast.wCode, forecast.isDay)
-                            size: Theme.iconSizeSmall
+                            size: forecastRoot.itemIconSize
                             color: root.accentColor
                             Layout.alignment: Qt.AlignHCenter
                         }
 
                         StyledText {
                             text: WeatherService.formatTemp(forecast.temp, false)
-                            font.pixelSize: Theme.fontSizeSmall
+                            font.pixelSize: forecastRoot.itemFontSize
                             font.weight: Font.Medium
                             color: root.textColor
                             Layout.alignment: Qt.AlignHCenter
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
                         }
                     }
                 }
@@ -602,15 +640,18 @@ DesktopPluginComponent {
                 id: dailyList
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                spacing: Theme.spacingXS
+                spacing: root.scaledSpacing
                 clip: true
 
-                model: Math.min(root.forecastDays, root.weather.forecast?.length ?? 0)
+                readonly property int itemCount: Math.min(root.forecastDays, root.weather.forecast?.length ?? 0)
+                readonly property int dynamicItemHeight: itemCount > 0 ? Math.round((height - (itemCount - 1) * spacing) / itemCount) : 24
+
+                model: itemCount
 
                 delegate: Rectangle {
                     required property int index
                     width: dailyList.width
-                    height: Theme.fontSizeMedium * 2 + Theme.spacingS
+                    height: dailyList.dynamicItemHeight
                     radius: Theme.cornerRadius - 2
                     color: index === 0 ? Theme.withAlpha(root.accentColor, 0.1) : root.tileBg
 
@@ -618,21 +659,21 @@ DesktopPluginComponent {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: Theme.spacingS
-                        anchors.rightMargin: Theme.spacingS
-                        spacing: Theme.spacingS
+                        anchors.leftMargin: root.scaledMargin
+                        anchors.rightMargin: root.scaledMargin
+                        spacing: root.scaledSpacing
 
                         StyledText {
                             text: forecast.day || "--"
-                            font.pixelSize: Theme.fontSizeSmall
+                            font.pixelSize: forecastRoot.itemFontSize
                             font.weight: index === 0 ? Font.Medium : Font.Normal
                             color: root.textColor
-                            Layout.preferredWidth: Theme.fontSizeSmall * 5
+                            Layout.preferredWidth: forecastRoot.itemFontSize * 5
                         }
 
                         DankIcon {
                             name: WeatherService.getWeatherIcon(forecast.wCode, true)
-                            size: Theme.iconSizeSmall + 2
+                            size: forecastRoot.itemIconSize + 2
                             color: root.accentColor
                         }
 
@@ -646,32 +687,32 @@ DesktopPluginComponent {
 
                             DankIcon {
                                 name: "water_drop"
-                                size: Theme.iconSizeSmall - 4
+                                size: forecastRoot.itemIconSize - 2
                                 color: Theme.primary
                             }
 
                             StyledText {
                                 text: forecast.precipitationProbability + "%"
-                                font.pixelSize: Theme.fontSizeSmall - 2
+                                font.pixelSize: forecastRoot.itemFontSize - 1
                                 color: Theme.primary
                             }
                         }
 
                         StyledText {
                             text: WeatherService.formatTemp(forecast.tempMax, false)
-                            font.pixelSize: Theme.fontSizeSmall
+                            font.pixelSize: forecastRoot.itemFontSize
                             font.weight: Font.Medium
                             color: root.textColor
                             horizontalAlignment: Text.AlignRight
-                            Layout.preferredWidth: Theme.fontSizeSmall * 2.5
+                            Layout.preferredWidth: forecastRoot.itemFontSize * 2.5
                         }
 
                         StyledText {
                             text: WeatherService.formatTemp(forecast.tempMin, false)
-                            font.pixelSize: Theme.fontSizeSmall
+                            font.pixelSize: forecastRoot.itemFontSize
                             color: root.dimColor
                             horizontalAlignment: Text.AlignRight
-                            Layout.preferredWidth: Theme.fontSizeSmall * 2.5
+                            Layout.preferredWidth: forecastRoot.itemFontSize * 2.5
                         }
                     }
                 }
@@ -687,12 +728,14 @@ DesktopPluginComponent {
         property color textColor: Theme.surfaceText
         property color dimColor: Theme.surfaceVariantText
         property bool compact: false
+        property real iconSize: Theme.iconSizeSmall
+        property real fontSize: Theme.fontSizeSmall
 
-        spacing: Theme.spacingXS
+        spacing: 2
 
         DankIcon {
             name: parent.icon
-            size: compact ? Theme.iconSizeSmall - 2 : Theme.iconSizeSmall
+            size: compact ? parent.iconSize - 2 : parent.iconSize
             color: parent.accentColor
         }
 
@@ -703,13 +746,13 @@ DesktopPluginComponent {
             StyledText {
                 visible: parent.parent.label.length > 0
                 text: parent.parent.label
-                font.pixelSize: Theme.fontSizeSmall - 2
+                font.pixelSize: parent.parent.fontSize - 2
                 color: parent.parent.dimColor
             }
 
             StyledText {
                 text: parent.parent.value
-                font.pixelSize: Theme.fontSizeSmall
+                font.pixelSize: parent.parent.fontSize
                 color: parent.parent.textColor
             }
         }
@@ -717,7 +760,7 @@ DesktopPluginComponent {
         StyledText {
             visible: compact
             text: parent.value
-            font.pixelSize: Theme.fontSizeSmall
+            font.pixelSize: parent.fontSize
             color: parent.textColor
         }
     }
