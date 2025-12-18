@@ -102,6 +102,13 @@ PluginSettings {
                 description: "Automatically start work sessions after breaks"
                 defaultValue: false
             }
+
+            ToggleSetting {
+                settingKey: "autoSetDND"
+                label: "Do Not Disturb Work"
+                description: "Automatically enable Do Not Disturb mode during work sessions"
+                defaultValue: false
+            }
         }
     }
 
