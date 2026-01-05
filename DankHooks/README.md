@@ -9,6 +9,7 @@
 | **Wallpaper Changed** | When wallpaper changes | `onWallpaperChanged` | Wallpaper file path |
 | **Light/Dark Mode Changed** | When switching between modes | `onLightModeChanged` | `light` or `dark` |
 | **Theme Changed** | When color theme changes | `onThemeChanged` | Theme name (e.g., `blue`, `red`, `dynamic`) |
+| **Matugen Completed** | When matugen finishes generating colors | `onMatugenCompleted` | `<mode>:<result>` (e.g., `dark:success`, `light:no-changes`, `dark:error`) |
 | **Night Mode Changed** | When night mode toggles | `onNightModeChanged` | `enabled` or `disabled` |
 
 ### Power & Battery
