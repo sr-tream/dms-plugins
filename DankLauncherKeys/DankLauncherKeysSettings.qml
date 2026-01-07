@@ -46,17 +46,17 @@ PluginSettings {
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    root.availableProviders = JSON.parse(text);
+                    root.availableProviders = JSON.parse(text).sort();
                 } catch (e) {
                     console.error("[DankLauncherKeysSettings] Failed to parse providers:", e);
-                    root.availableProviders = ["niri", "hyprland", "sway"];
+                    root.availableProviders = ["hyprland", "niri", "sway"];
                 }
             }
         }
 
         onExited: exitCode => {
             if (exitCode !== 0) {
-                root.availableProviders = ["niri", "hyprland", "sway"];
+                root.availableProviders = ["hyprland", "niri", "sway"];
             }
         }
     }

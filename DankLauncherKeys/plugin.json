@@ -2,7 +2,7 @@
     "id": "dankLauncherKeys",
     "name": "Dank Launcher Keys",
     "description": "Search and browse keyboard shortcuts from your compositor and applications",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "license": "MIT",
     "author": "Avenge Media",
     "icon": "keyboard",
