@@ -276,6 +276,17 @@ PluginComponent {
             headerText: "KDE Connect"
             detailsText: KDEConnectService.connectedCount + " connected • " + KDEConnectService.pairedCount + " paired"
             showCloseButton: true
+            headerActions: Component {
+                DankActionButton {
+                    iconName: KDEConnectService.isRefreshing ? "sync" : "refresh"
+                    iconColor: Theme.surfaceVariantText
+                    buttonSize: 28
+                    enabled: !KDEConnectService.isRefreshing
+                    tooltipText: I18n.tr("Refresh", "KDE Connect refresh tooltip")
+                    tooltipSide: "bottom"
+                    onClicked: KDEConnectService.refreshDevices()
+                }
+            }
 
             Column {
                 width: parent.width
@@ -284,12 +295,6 @@ PluginComponent {
                 UnavailableMessage {
                     visible: !KDEConnectService.available
                     width: parent.width
-                }
-
-                ActionButtons {
-                    visible: KDEConnectService.available
-                    width: parent.width
-                    onRefresh: KDEConnectService.refreshDevices()
                 }
 
                 EmptyState {
