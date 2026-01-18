@@ -175,29 +175,34 @@ PluginComponent {
 
     horizontalBarPill: Component {
         Row {
-            spacing: Theme.spacingXS
+            spacing: (root.barConfig?.noBackground ?? false) ? 1 : 2
 
             DankIcon {
                 name: root.hasDevice && root.selectedDevice.isReachable ? "phonelink" : "phonelink_off"
-                size: root.iconSize
-                color: root.hasDevice && root.selectedDevice.isReachable ? Theme.primary : Theme.surfaceVariantText
+                size: Theme.barIconSize(root.barThickness, -4)
+                color: {
+                    if (!KDEConnectService.available)
+                        return Theme.widgetIconColor;
+                    if (root.hasDevice && root.selectedDevice.isReachable)
+                        return Theme.primary;
+                    return Theme.widgetIconColor;
+                }
                 anchors.verticalCenter: parent.verticalCenter
             }
 
             StyledText {
                 visible: root.hasDevice && root.selectedDevice.batteryCharge >= 0
                 text: root.selectedDevice?.batteryCharge + "%"
-                font.pixelSize: Theme.fontSizeSmall
-                font.weight: Font.Medium
-                color: root.selectedDevice?.batteryCharging ? Theme.success : Theme.surfaceVariantText
+                font.pixelSize: Theme.barTextSize(root.barThickness, root.barConfig?.fontScale)
+                color: root.selectedDevice?.batteryCharging ? Theme.primary : Theme.widgetTextColor
                 anchors.verticalCenter: parent.verticalCenter
             }
 
             StyledText {
                 visible: !KDEConnectService.available
                 text: "N/A"
-                font.pixelSize: Theme.fontSizeSmall
-                color: Theme.surfaceVariantText
+                font.pixelSize: Theme.barTextSize(root.barThickness, root.barConfig?.fontScale)
+                color: Theme.widgetTextColor
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
@@ -205,21 +210,26 @@ PluginComponent {
 
     verticalBarPill: Component {
         Column {
-            spacing: Theme.spacingXS
+            spacing: 1
 
             DankIcon {
                 name: root.hasDevice && root.selectedDevice.isReachable ? "phonelink" : "phonelink_off"
-                size: root.iconSize
-                color: root.hasDevice && root.selectedDevice.isReachable ? Theme.primary : Theme.surfaceVariantText
+                size: Theme.barIconSize(root.barThickness)
+                color: {
+                    if (!KDEConnectService.available)
+                        return Theme.widgetIconColor;
+                    if (root.hasDevice && root.selectedDevice.isReachable)
+                        return Theme.primary;
+                    return Theme.widgetIconColor;
+                }
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
             StyledText {
                 visible: root.hasDevice && root.selectedDevice.batteryCharge >= 0
-                text: root.selectedDevice?.batteryCharge + "%"
-                font.pixelSize: Theme.fontSizeSmall
-                font.weight: Font.Medium
-                color: root.selectedDevice?.batteryCharging ? Theme.success : Theme.surfaceVariantText
+                text: root.selectedDevice?.batteryCharge.toString()
+                font.pixelSize: Theme.barTextSize(root.barThickness, root.barConfig?.fontScale)
+                color: root.selectedDevice?.batteryCharging ? Theme.primary : Theme.widgetTextColor
                 anchors.horizontalCenter: parent.horizontalCenter
             }
         }
