@@ -266,7 +266,7 @@ PluginComponent {
         if (globalTimerState.value === "work")
             return Theme.primary
         if (globalTimerState.value === "shortBreak")
-            return Theme.success
+            return Theme.info
         return Theme.warning
     }
 
