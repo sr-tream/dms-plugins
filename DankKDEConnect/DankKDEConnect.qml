@@ -13,7 +13,7 @@ PluginComponent {
     property bool showShareDialog: false
     property string shareDeviceId: ""
 
-    readonly property var selectedDevice: selectedDeviceId ? KDEConnectService.getDevice(selectedDeviceId) : null
+    readonly property var selectedDevice: selectedDeviceId ? KDEConnectService.devices[selectedDeviceId] ?? null : null
     readonly property bool hasDevice: selectedDevice !== null
 
     ccWidgetIcon: {

@@ -2,7 +2,7 @@
     "id": "dankKDEConnect",
     "name": "KDE Connect",
     "description": "Control connected KDE Connect devices - view battery, send files, find phone, and more",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "license": "MIT",
     "author": "Avenge Media",
     "icon": "devices",
