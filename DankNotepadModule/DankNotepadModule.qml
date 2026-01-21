@@ -93,7 +93,8 @@ PluginComponent {
             content: sourceContent,
             mode: isMarkdown ? "markdown" : "code",
             language: isMarkdown ? "" : lang,
-            styleName: style
+            styleName: style,
+            showLineNumbers: SettingsData.notepadShowLineNumbers
         })
 
         if (!process)
@@ -112,13 +113,15 @@ PluginComponent {
             property string mode: "code"
             property string language: ""
             property string styleName: "github-dark"
+            property bool showLineNumbers: false
 
-            command: ["sh", "-c", "if [ \"$MODE\" = \"markdown\" ]; then printf '%s' \"$CONTENT\" | dms chroma --markdown --inline --style \"$STYLE\"; elif [ -n \"$LANG\" ]; then printf '%s' \"$CONTENT\" | dms chroma --inline --style \"$STYLE\" -l \"$LANG\"; else printf '%s' \"$CONTENT\" | dms chroma --inline --style \"$STYLE\"; fi"]
+            command: ["sh", "-c", "if [ \"$MODE\" = \"markdown\" ]; then printf '%s' \"$CONTENT\" | dms chroma --markdown --inline --style \"$STYLE\" $LINE_NUMBERS_FLAG; elif [ -n \"$LANG\" ]; then printf '%s' \"$CONTENT\" | dms chroma --inline --style \"$STYLE\" -l \"$LANG\" $LINE_NUMBERS_FLAG; else printf '%s' \"$CONTENT\" | dms chroma --inline --style \"$STYLE\" $LINE_NUMBERS_FLAG; fi"]
             environment: {
                 "CONTENT": content,
                 "MODE": mode,
                 "LANG": language,
-                "STYLE": styleName
+                "STYLE": styleName,
+                "LINE_NUMBERS_FLAG": showLineNumbers ? "--line-numbers" : ""
             }
 
             stdout: StdioCollector {
