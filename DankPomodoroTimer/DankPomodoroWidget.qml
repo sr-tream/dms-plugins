@@ -55,12 +55,20 @@ PluginComponent {
 
         let data = []
         const today = new Date()
+        const todayKey = formatDateKey(today)
 
         for (let i = 6; i >= 0; i--) {
             const date = new Date(today)
             date.setDate(today.getDate() - i)
             const dateKey = formatDateKey(date)
-            const count = pluginService.loadPluginData("dankPomodoroTimer", "completedPomodoros-" + dateKey, 0)
+            
+            let count = 0
+            if (dateKey === todayKey) {
+                count = globalCompletedPomodoros.value
+            } else {
+                count = pluginService.loadPluginData("dankPomodoroTimer", "completedPomodoros-" + dateKey, 0)
+            }
+
             data.push({
                 date: dateKey,
                 count: count,
