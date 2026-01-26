@@ -92,11 +92,16 @@ QtObject {
         const items = [];
         for (let i = 0; i < results.length; i++) {
             const gif = results[i];
+            const urls = {
+                webp: gif.webpUrl || "",
+                gif: gif.gifUrl || "",
+                mp4: gif.mp4Url || ""
+            };
             items.push({
                 name: gif.title || "GIF",
                 icon: "material:gif",
                 comment: I18n.tr("Shift+Enter to paste"),
-                action: "copy:" + gif.originalUrl,
+                action: "copy:" + JSON.stringify(urls),
                 categories: ["GIF Search"],
                 imageUrl: gif.previewUrl,
                 animated: true,
@@ -106,20 +111,32 @@ QtObject {
         return items;
     }
 
+    function parseUrls(item) {
+        if (!item?.action || !item.action.startsWith("copy:"))
+            return null;
+        try {
+            return JSON.parse(item.action.substring(5));
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function getPreferredUrl(urls) {
+        if (!urls)
+            return "";
+        return urls.webp || urls.gif || urls.mp4 || "";
+    }
+
     function getPasteText(item) {
-        if (!item?.action)
-            return null;
-        if (!item.action.startsWith("copy:"))
-            return null;
-        return item.action.substring(5);
+        const urls = parseUrls(item);
+        return getPreferredUrl(urls) || null;
     }
 
     function executeItem(item) {
-        if (!item?.action)
+        const urls = parseUrls(item);
+        const url = getPreferredUrl(urls);
+        if (!url)
             return;
-        if (!item.action.startsWith("copy:"))
-            return;
-        const url = item.action.substring(5);
         Quickshell.execDetached(["dms", "cl", "copy", url]);
         ToastService.showInfo(I18n.tr("Copied to clipboard"));
     }
@@ -128,26 +145,52 @@ QtObject {
         if (!item)
             return [];
 
-        const gifUrl = item.action?.startsWith("copy:") ? item.action.substring(5) : "";
-        if (!gifUrl)
+        const urls = parseUrls(item);
+        if (!urls)
             return [];
 
-        return [
-            {
-                icon: "content_copy",
-                text: I18n.tr("Copy URL"),
+        const actions = [];
+        if (urls.webp) {
+            actions.push({
+                icon: "image",
+                text: "WebP",
                 action: () => {
-                    Quickshell.execDetached(["dms", "cl", "copy", gifUrl]);
-                    ToastService.showInfo(I18n.tr("Copied to clipboard"));
+                    Quickshell.execDetached(["dms", "cl", "copy", urls.webp]);
+                    ToastService.showInfo(I18n.tr("Copied WebP"));
                 }
-            },
-            {
+            });
+        }
+        if (urls.gif) {
+            actions.push({
+                icon: "gif_box",
+                text: "GIF",
+                action: () => {
+                    Quickshell.execDetached(["dms", "cl", "copy", urls.gif]);
+                    ToastService.showInfo(I18n.tr("Copied GIF"));
+                }
+            });
+        }
+        if (urls.mp4) {
+            actions.push({
+                icon: "movie",
+                text: "MP4",
+                action: () => {
+                    Quickshell.execDetached(["dms", "cl", "copy", urls.mp4]);
+                    ToastService.showInfo(I18n.tr("Copied MP4"));
+                }
+            });
+        }
+
+        const preferredUrl = getPreferredUrl(urls);
+        if (preferredUrl) {
+            actions.push({
                 icon: "open_in_new",
                 text: I18n.tr("Open in Browser"),
                 action: () => {
-                    Qt.openUrlExternally(gifUrl);
+                    Qt.openUrlExternally(preferredUrl);
                 }
-            }
-        ];
+            });
+        }
+        return actions;
     }
 }

@@ -60,12 +60,19 @@ Singleton {
             const hd = file.hd || file.sd || {};
             const preview = file.sd || file.hd || {};
 
+            const webpUrl = hd.webp?.url || preview.webp?.url || "";
+            const gifUrl = hd.gif?.url || preview.gif?.url || "";
+            const mp4Url = hd.mp4?.url || preview.mp4?.url || "";
+
             items.push({
                 id: gif.id || "",
                 slug: gif.slug || "",
                 title: gif.title || "GIF",
                 previewUrl: preview.webp?.url || preview.gif?.url || hd.webp?.url || hd.gif?.url || "",
-                originalUrl: hd.gif?.url || hd.webp?.url || preview.gif?.url || "",
+                webpUrl: webpUrl,
+                gifUrl: gifUrl,
+                mp4Url: mp4Url,
+                originalUrl: webpUrl || gifUrl || mp4Url,
                 width: hd.gif?.width || 200,
                 height: hd.gif?.height || 200
             });

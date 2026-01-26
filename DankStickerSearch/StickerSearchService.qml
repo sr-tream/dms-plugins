@@ -137,12 +137,19 @@ Singleton {
             const hd = file.hd || file.sd || {};
             const preview = file.sd || file.hd || {};
 
+            const webpUrl = hd.webp?.url || preview.webp?.url || "";
+            const gifUrl = hd.gif?.url || preview.gif?.url || "";
+            const mp4Url = hd.mp4?.url || preview.mp4?.url || "";
+
             items.push({
                 id: sticker.id || "",
                 slug: sticker.slug || "",
                 title: sticker.title || "Sticker",
                 previewUrl: preview.webp?.url || preview.gif?.url || preview.png?.url || hd.webp?.url || hd.gif?.url || hd.png?.url || "",
-                originalUrl: hd.gif?.url || hd.webp?.url || preview.gif?.url || preview.webp?.url || hd.png?.url || preview.png?.url || "",
+                webpUrl: webpUrl,
+                gifUrl: gifUrl,
+                mp4Url: mp4Url,
+                originalUrl: webpUrl || gifUrl || mp4Url,
                 width: hd.gif?.width || hd.png?.width || 200,
                 height: hd.gif?.height || hd.png?.height || 200
             });
