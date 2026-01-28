@@ -30,6 +30,7 @@ PluginComponent {
     property string hookBrightness: pluginData.brightness || ""
     property string hookNightMode: pluginData.nightMode || ""
     property string hookDoNotDisturb: pluginData.doNotDisturb || ""
+    property string hookIdleInhibit: pluginData.idleInhibit || ""
     property string hookMediaPlaying: pluginData.mediaPlaying || ""
     property string hookIdleStateActive: pluginData.idleStateActive || ""
     property string hookMonitorWallpaper: pluginData.monitorWallpaper || ""
@@ -64,6 +65,16 @@ PluginComponent {
         function onDoNotDisturbChanged() {
             if (hookDoNotDisturb) {
                 executeHook(hookDoNotDisturb, "onDoNotDisturbChanged", SessionData.doNotDisturb ? "enabled" : "disabled");
+            }
+        }
+    }
+
+    Connections {
+        target: SessionService
+
+        function onInhibitorChanged() {
+            if (hookIdleInhibit) {
+                executeHook(hookIdleInhibit, "onInhibitorChanged", SessionService.idleInhibited ? "inhibited" : "not-inhibited");
             }
         }
     }

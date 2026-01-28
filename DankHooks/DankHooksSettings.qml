@@ -160,6 +160,14 @@ PluginSettings {
         defaultValue: ""
     }
 
+    StringSetting {
+        settingKey: "idleInhibit"
+        label: "Idle Inhibitor Changed"
+        description: "Hook: onInhibitorChanged | Value: 'inhibited' or 'not-inhibited'"
+        placeholder: "/path/to/inhibitor-hook.sh"
+        defaultValue: ""
+    }
+
     StyledRect {
         width: parent.width
         height: 1
