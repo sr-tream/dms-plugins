@@ -43,29 +43,18 @@ Rectangle {
             }
 
             Rectangle {
+                width: 28
                 height: 28
                 radius: 14
-                color: refreshArea.containsMouse ? Theme.primaryHoverLight : Theme.surfaceLight
-                width: 80
+                color: refreshArea.containsMouse ? Theme.withAlpha(Theme.primary, 0.08) : "transparent"
                 Layout.alignment: Qt.AlignVCenter
                 opacity: PhoneConnectService.isRefreshing ? 0.5 : 1.0
 
-                Row {
+                DankIcon {
                     anchors.centerIn: parent
-                    spacing: Theme.spacingXS
-
-                    DankIcon {
-                        name: PhoneConnectService.isRefreshing ? "sync" : "refresh"
-                        size: Theme.fontSizeSmall
-                        color: Theme.primary
-                    }
-
-                    StyledText {
-                        text: I18n.tr("Refresh", "KDE Connect refresh button")
-                        font.pixelSize: Theme.fontSizeSmall
-                        color: Theme.primary
-                        font.weight: Font.Medium
-                    }
+                    name: PhoneConnectService.isRefreshing ? "sync" : "refresh"
+                    size: Theme.iconSize - 4
+                    color: Theme.primary
                 }
 
                 MouseArea {
@@ -162,7 +151,7 @@ Rectangle {
                     width: deviceListView.width
                     height: contentCol.implicitHeight + Theme.spacingM * 2
                     radius: Theme.cornerRadius
-                    color: Theme.surfaceContainerHigh
+                    color: Theme.withAlpha(Theme.surfaceContainerHighest, Theme.popupTransparency)
 
                     Column {
                         id: contentCol
@@ -201,6 +190,7 @@ Rectangle {
                                     text: getStatusText()
                                     font.pixelSize: Theme.fontSizeSmall
                                     color: getStatusColor()
+                                    visible: text.length > 0
 
                                     function getStatusText() {
                                         if (!device)
@@ -211,9 +201,9 @@ Rectangle {
                                             return I18n.tr("Pairing", "KDE Connect pairing in progress status") + "...";
                                         if (!device.isPaired)
                                             return I18n.tr("Not paired", "KDE Connect not paired status");
-                                        if (device.isReachable)
-                                            return I18n.tr("Connected", "KDE Connect connected status");
-                                        return I18n.tr("Offline", "KDE Connect offline status");
+                                        if (!device.isReachable)
+                                            return I18n.tr("Offline", "KDE Connect offline status");
+                                        return "";
                                     }
 
                                     function getStatusColor() {
@@ -223,10 +213,6 @@ Rectangle {
                                             return Theme.warning;
                                         if (device.isPairRequested)
                                             return Theme.warning;
-                                        if (!device.isPaired)
-                                            return Theme.surfaceVariantText;
-                                        if (device.isReachable)
-                                            return Theme.success;
                                         return Theme.surfaceVariantText;
                                     }
                                 }
@@ -244,7 +230,7 @@ Rectangle {
                                     DankIcon {
                                         name: PhoneConnectService.getBatteryIcon(device)
                                         size: Theme.iconSize - 4
-                                        color: device?.batteryCharging ? Theme.success : Theme.surfaceVariantText
+                                        color: device?.batteryCharging ? Theme.primary : Theme.surfaceVariantText
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 

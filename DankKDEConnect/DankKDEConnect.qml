@@ -311,6 +311,7 @@ PluginComponent {
                         width: parent.width
                         deviceId: modelData
                         device: PhoneConnectService.getDevice(modelData)
+                        selectable: PhoneConnectService.deviceIds.length > 1
                         isSelected: root.selectedDeviceId === modelData
                         onClicked: root.selectDevice(modelData)
                         onAction: action => root.handleAction(modelData, action)

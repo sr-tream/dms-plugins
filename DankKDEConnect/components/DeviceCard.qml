@@ -8,6 +8,7 @@ StyledRect {
 
     required property string deviceId
     required property var device
+    property bool selectable: false
     property bool isSelected: false
 
     signal clicked
@@ -15,14 +16,17 @@ StyledRect {
 
     height: contentColumn.implicitHeight + Theme.spacingM * 2
     radius: Theme.cornerRadius
-    color: isSelected ? Theme.primaryContainer : Theme.surfaceContainerHigh
-    border.width: isSelected ? 2 : 0
-    border.color: Theme.primary
+    color: cardMouseArea.containsMouse && selectable ? Theme.withAlpha(Theme.primary, 0.08) : Theme.withAlpha(Theme.surfaceContainerHighest, Theme.popupTransparency)
+    border.width: 0
+    border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.12)
 
     MouseArea {
+        id: cardMouseArea
         anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-        onClicked: root.clicked()
+        hoverEnabled: root.selectable
+        cursorShape: root.selectable ? Qt.PointingHandCursor : Qt.ArrowCursor
+        onClicked: if (root.selectable)
+            root.clicked()
     }
 
     Column {
@@ -62,6 +66,7 @@ StyledRect {
                     text: getStatusText()
                     font.pixelSize: Theme.fontSizeSmall
                     color: getStatusColor()
+                    visible: text.length > 0
                 }
             }
 
@@ -77,7 +82,7 @@ StyledRect {
                     DankIcon {
                         name: PhoneConnectService.getBatteryIcon(root.device)
                         size: Theme.iconSize - 4
-                        color: root.device?.batteryCharging ? Theme.success : Theme.surfaceVariantText
+                        color: root.device?.batteryCharging ? Theme.primary : Theme.surfaceVariantText
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
@@ -207,9 +212,9 @@ StyledRect {
             return I18n.tr("Pairing", "KDE Connect pairing in progress status") + "...";
         if (!root.device.isPaired)
             return I18n.tr("Not paired", "KDE Connect not paired status");
-        if (root.device.isReachable)
-            return I18n.tr("Connected", "KDE Connect connected status");
-        return I18n.tr("Offline", "KDE Connect offline status");
+        if (!root.device.isReachable)
+            return I18n.tr("Offline", "KDE Connect offline status");
+        return "";
     }
 
     function getStatusColor() {
@@ -219,10 +224,6 @@ StyledRect {
             return Theme.warning;
         if (root.device.isPairRequested)
             return Theme.warning;
-        if (!root.device.isPaired)
-            return Theme.surfaceVariantText;
-        if (root.device.isReachable)
-            return Theme.success;
         return Theme.surfaceVariantText;
     }
 }

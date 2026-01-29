@@ -131,14 +131,7 @@ Singleton {
                 console.warn("[Valent] Failed to start service:", response.error);
                 return;
             }
-            Qt.callLater(triggerRefresh);
         });
-    }
-
-    function triggerRefresh() {
-        Proc.runCommand(null, ["dconf", "write", "/ca/andyholmes/valent/device-addresses", "['_']"], (stdout, exitCode) => {
-            Proc.runCommand(null, ["dconf", "reset", "/ca/andyholmes/valent/device-addresses"], (out, code) => {}, 200);
-        }, 0);
     }
 
     function openValentWindow() {
@@ -257,8 +250,6 @@ Singleton {
         if (!available || isRefreshing)
             return;
         isRefreshing = true;
-
-        triggerRefresh();
 
         DMSService.dbusCall("session", service, managerPath, objectManagerInterface, "GetManagedObjects", [], response => {
             isRefreshing = false;

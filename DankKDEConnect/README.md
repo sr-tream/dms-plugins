@@ -101,7 +101,7 @@ Install **KDE Connect** on your phone (Android/iOS). Both KDE Connect and Valent
 - Send ping notifications
 - Share clipboard
 - Browse phone files (SFTP)
-- Send SMS (KDE Connect only)
+- Send SMS
 
 ## Troubleshooting
 
