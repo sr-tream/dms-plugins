@@ -4,6 +4,7 @@ import qs.Common
 import qs.Services
 import qs.Widgets
 import qs.Modules.Plugins
+import "AnsiParser.js" as AnsiParser
 
 PluginComponent {
     id: root
@@ -71,7 +72,7 @@ PluginComponent {
         if (displayCommand) {
             Qt.callLater(refreshOutput);
         } else {
-            currentOutput = displayText;
+            currentOutput = AnsiParser.parseAnsiToHtml(displayText);
         }
         if (updateInterval > 0) {
             updateTimer.restart();
@@ -82,13 +83,13 @@ PluginComponent {
         if (displayCommand) {
             Qt.callLater(refreshOutput);
         } else {
-            currentOutput = displayText;
+            currentOutput = AnsiParser.parseAnsiToHtml(displayText);
         }
     }
 
     onDisplayTextChanged: {
         if (!displayCommand) {
-            currentOutput = displayText;
+            currentOutput = AnsiParser.parseAnsiToHtml(displayText);
         }
     }
 
@@ -104,7 +105,7 @@ PluginComponent {
         if (displayCommand) {
             Qt.callLater(refreshOutput);
         } else {
-            currentOutput = displayText;
+            currentOutput = AnsiParser.parseAnsiToHtml(displayText);
         }
         if (updateInterval > 0) {
             updateTimer.start();
@@ -125,7 +126,7 @@ PluginComponent {
 
     function refreshOutput() {
         if (!displayCommand) {
-            currentOutput = displayText;
+            currentOutput = AnsiParser.parseAnsiToHtml(displayText);
             return;
         }
 
@@ -148,7 +149,8 @@ PluginComponent {
 
         stdout: SplitParser {
             onRead: data => {
-                root.currentOutput = data.trim();
+                const output = data.trim();
+                root.currentOutput = AnsiParser.parseAnsiToHtml(output);
             }
         }
 
@@ -211,8 +213,9 @@ PluginComponent {
                     visible: root.showIcon
                 }
 
-                StyledText {
+                Text {
                     text: root.currentOutput || ""
+                    textFormat: Text.RichText
                     font.pixelSize: Theme.fontSizeSmall
                     font.weight: Font.Medium
                     color: Theme.surfaceText
@@ -251,8 +254,9 @@ PluginComponent {
                     visible: root.showIcon
                 }
 
-                StyledText {
+                Text {
                     text: root.currentOutput || ""
+                    textFormat: Text.RichText
                     font.pixelSize: Theme.fontSizeSmall
                     font.weight: Font.Medium
                     color: Theme.surfaceText
