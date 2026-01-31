@@ -155,6 +155,8 @@ function parseAnsiToHtml(text) {
                 } else if (code === 22) {
                     currentStyle.bold = false
                     currentStyle.italic = false
+                } else if (code === 23) {
+                    currentStyle.italic = false
                 } else if (code === 24) {
                     currentStyle.underline = false
                 } else if (code === 39) {
