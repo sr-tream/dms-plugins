@@ -95,10 +95,26 @@ const xterm256Colors = [
  * Convert RGB values to hex color
  */
 function rgbToHex(r, g, b) {
-    return "#" + 
-        r.toString(16).padStart(2, '0') + 
-        g.toString(16).padStart(2, '0') + 
-        b.toString(16).padStart(2, '0')
+    // Normalize and clamp each channel to the 0-255 range
+    function clampChannel(value) {
+        let num = Number(value)
+        if (!Number.isFinite(num)) {
+            num = 0
+        }
+        num = Math.round(num)
+        if (num < 0) num = 0
+        if (num > 255) num = 255
+        return num
+    }
+
+    const cr = clampChannel(r)
+    const cg = clampChannel(g)
+    const cb = clampChannel(b)
+
+    return "#" +
+        cr.toString(16).padStart(2, '0') +
+        cg.toString(16).padStart(2, '0') +
+        cb.toString(16).padStart(2, '0')
 }
 
 /**
